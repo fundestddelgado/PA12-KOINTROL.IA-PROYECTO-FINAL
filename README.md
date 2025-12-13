@@ -16,6 +16,7 @@ Para responder a esto, el sistema se enfoca en:
 La aplicación integra la visualización de los resultados del modelo con una interfaz moderna y funcionalidades de predicción por punto geográfico (futura implementación).
 
 ---
+![Diagrama de flujo del procesamiento de datos](Visualization/diagram.png)
 
 ##  Arquitectura y Flujo de Datos
 
