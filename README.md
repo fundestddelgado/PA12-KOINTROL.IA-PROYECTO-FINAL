@@ -96,7 +96,7 @@ La aplicación utiliza **Tkinter** para la interfaz de escritorio, organizada en
 
 El proyecto sigue una estructura modular para facilitar el desarrollo y mantenimiento:
 
-* **`app_unified.py`** → Control central de la aplicación y gestión de la interfaz de usuario unificada (Pestañas de Predictor y Mapa).
+* **`interfaz.py`** → Control central de la aplicación y gestión de la interfaz de usuario unificada (Pestañas de Predictor y Mapa).
 * **`Visualization/corregimientos_map.py`** → Módulo encargado de la lógica de carga de GeoJSON, el procesamiento GeoPandas/Pandas y la generación/caching del mapa interactivo de Plotly.
 * **`Datasets/`** → Carpeta que almacena los archivos de datos requeridos: `solar_with_predictions.csv` (datos procesados y predicciones) y `Panama_Boundaries.geojson` (límites geográficos).
 * **`solar_radiation_map_cache.html`** → Archivo HTML generado y cacheado por Plotly para la visualización del mapa.
