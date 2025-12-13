@@ -20,9 +20,9 @@ class SolarDatasetBuilder:
         def fix_geo_string(s):
             if not isinstance(s, str):
                 return None
-            # Arregla comillas duplicadas
+           
             s = s.replace('""', '"').strip()
-            # Remueve comillas externas
+            
             if s.startswith('"') and s.endswith('"'):
                 s = s[1:-1]
             # Intenta JSON
@@ -135,11 +135,11 @@ class SolarDatasetBuilder:
         return merged
 
 
-if __name__ == "__main__":
-    builder = SolarDatasetBuilder(
-        r"C:\Users\alan7\OneDrive\Documentos\Codigo\Python\Proyectos\SolarKointrol\Panama_AgERA5_JanJun2025.csv",
-        r"C:\Users\alan7\OneDrive\Documentos\Codigo\Python\Proyectos\SolarKointrol\Panama_ClimateVars_Clean_JanJun2025.csv",
-        r"C:\Users\alan7\OneDrive\Documentos\Codigo\Python\Proyectos\SolarKointrol\Panama_ERA5Land_JanJun2025.csv"
-    )
+# if __name__ == "__main__":
+#     builder = SolarDatasetBuilder(
+#         r"C:\Users\alan7\OneDrive\Documentos\Codigo\Python\Proyectos\SolarKointrol\Panama_AgERA5_JanJun2025.csv",
+#         r"C:\Users\alan7\OneDrive\Documentos\Codigo\Python\Proyectos\SolarKointrol\Panama_ClimateVars_Clean_JanJun2025.csv",
+#         r"C:\Users\alan7\OneDrive\Documentos\Codigo\Python\Proyectos\SolarKointrol\Panama_ERA5Land_JanJun2025.csv"
+#     )
 
-    builder.build("./solar_merged.csv")
+#     builder.build("./solar_merged.csv")

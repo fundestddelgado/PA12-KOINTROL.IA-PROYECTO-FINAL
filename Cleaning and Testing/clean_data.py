@@ -12,9 +12,6 @@ cols_to_drop = [
     ".geo"
 ]
 
-# si quieres usar solo temperature_2m_C, elimina esta otra:
-# cols_to_drop.append("temperature_2m_C")
-
 df = df.drop(columns=[c for c in cols_to_drop if c in df.columns])
 
 # Guardar dataset limpio
