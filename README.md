@@ -21,12 +21,37 @@ La aplicación integra la visualización de los resultados del modelo con una in
 
 El proyecto se estructura en tres fases principales: **Datos**, **Modelo** e **Interfaz**.
 
+## 📝 Recopilación y Variables del Estudio
+
 ### 1. Recopilación y Procesamiento de Datos
 
 * **Fuente de Datos:** La información climática (múltiples variables) se recopiló utilizando **Google Earth Engine** y el *dataset* **AgEra5**.
 * **Volumen:** Se integró un *dataset* de **128,000 puntos de datos** (128k).
 * **Procesamiento:** Los datos fueron procesados, limpiados e integrados en un solo *dataset* por píxel, utilizando sus coordenadas de latitud y longitud.
     * Este *dataset* es utilizado por el módulo de mapeo para generar estadísticas por corregimiento.
+
+---
+
+### . Variables Utilizadas en el Estudio
+
+Las siguientes variables climáticas fueron extraídas, procesadas y utilizadas como *features* (características) para el análisis y modelado del estudio. 
+
+| Variable | Tipo de Dato | Propósito/Porqué Simple |
+| :--- | :--- | :--- |
+| **date** | Categórica (Fecha) | Permite la indexación y el análisis temporal. |
+| **lon** | Numérica (Coordenada) | Define la ubicación espacial (Longitud). |
+| **lat** | Numérica (Coordenada) | Define la ubicación espacial (Latitud). |
+| **elevation** | Numérica (Metros) | Representa la altitud, que influye directamente en el clima. |
+| **Cloud\_Cover\_Mean\_24h** | Numérica (Fracción) | Mide la nubosidad promedio, afectando la radiación solar. |
+| **Temperature\_Air\_2m\_Mean\_24h** | Numérica (Kelvin) | Temperatura del aire a 2m (promedio de 24h), crucial para el clima. |
+| **Temperature\_Air\_2m\_Mean\_24h\_C** | Numérica (Celsius) | Versión de la temperatura en Celsius para fácil interpretación. |
+| **relative\_humidity** | Numérica (%) | Mide la cantidad de vapor de agua en el aire. |
+| **surface\_pressure** | Numérica (Pascal) | Presión en la superficie terrestre, afecta sistemas meteorológicos. |
+| **temperature\_2m\_C** | Numérica (Celsius) | Temperatura del aire a 2m (instantánea/diaria), un factor clave. |
+| **total\_precipitation\_sum** | Numérica (Metros) | Cantidad acumulada de lluvia/nieve, esencial para modelos climaticos. |
+| **surface\_net\_solar\_radiation\_sum (target)** | Numérica ($J/m^2$) | Es la **variable objetivo** (a predecir/analizar), representa la energía solar neta recibida. |
+
+---
 
 ### 2. Modelo de Red Neuronal (NN)
 
@@ -96,13 +121,13 @@ El proyecto se basa en las siguientes librerías de Python:
 
 ##  Futuras Mejoras
 
-* **Integración en Tiempo Real:** Conexión del módulo de predicción por coordenadas (Pestaña 1) con el modelo de Red Neuronal real para obtener resultados en la interfaz.
+* **Integración en Tiempo Real:** Conexión del módulo de predicción por coordenadas (Pestaña 2) con el modelo de Red Neuronal real para obtener resultados en la interfaz.
 * **Integración Web:** Explorar opciones para incrustar el mapa interactivo directamente en la interfaz de escritorio sin depender del navegador externo (ej. utilizando QtWebEngine o webview).
 * **Análisis Temporal:** Permitir la selección de fechas o períodos de tiempo para la predicción.
 
 ---
 
-## 👥 Equipo de Desarrollo (SIC 2025 - PAXX)
+## 👥 Equipo de Desarrollo (SIC 2025 - PA12)
 
 | Nombre | Rol o Función |
 | :--- | :--- |
