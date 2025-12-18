@@ -19,7 +19,7 @@ La aplicación integra la visualización de los resultados del modelo con una in
 
 ---
 
-![Diagrama de flujo del procesamiento de datos](Visualization/diagram.png)
+![Diagrama de flujo del procesamiento de datos](Proyecto_final_SIC_2025/Visualization/diagram.png)
 
 ## Arquitectura y Flujo de Datos
 
@@ -71,6 +71,7 @@ Se utilizó **TensorFlow/Keras** para construir y entrenar una Red Neuronal dens
     * **R² (Coeficiente de Determinación):** 0.9806
     * **MAPE:** 32.41%
 
+![Diagrama de flujo del procesamiento de datos](Proyecto_final_SIC_2025/Visualization/results.png)
 ---
 
 ### 3. Interfaz de Usuario (UI) y Visualización
