@@ -2,22 +2,9 @@
 Función para generar datos de entrada para el modelo
 de predcción para una coordenada en específico
 '''
-'''Orden segun solar_merged_clean.csv
-Cloud_Cover_Mean_24h,
-date,
-lon,
-lat,
-elevation,
-relative_humidity,
-surface_net_solar_radiation_sum,
-surface_pressure,
-temperature_2m_C
-total_precipitation_sum,
-wind_direction,
-wind_speed'''
-
 from classfinal import Solicitud, DataFetcher
-def feature_generator(coords):
+
+def feature_generator(coords, date=None):
     # Variables
     vars = [
         'nubosidad',
@@ -30,10 +17,11 @@ def feature_generator(coords):
         'direccion viento',
         'velocidad viento'
     ]
-    
+    # Opciones de fecha
+    date_op = date
     # Hacer una solicitud
     solicitud_class = Solicitud(coords)
-    detalles = solicitud_class.hacer_solicitud(vars)
+    detalles = solicitud_class.hacer_solicitud(vars, fecha=date_op)
     
     # Usar Fetcher y generar DataFrame
     fetcher = DataFetcher(detalles)
@@ -74,5 +62,5 @@ def feature_generator(coords):
     df = df[desired_order]
     
     return df
-# DEMO
-# print(feature_generator([-99.1332, 19.4326]))
+
+print(feature_generator([-99.1332, 19.4326],"2025-10-01"))
