@@ -2,19 +2,15 @@ import ee
 import pandas as pd
 from datetime import date, timedelta
 import math
+import os
 
-# ---Inicializamos la sesión de Earth Engine con el proyecto especificado---
+# --- Manejo Dinámico de Rutas ---
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 service_account = 'kointrol-team@kointrol-ai.iam.gserviceaccount.com'
-key_file = "kointrol-ai-218d7c03278d.json"
+key_file = os.path.join(BASE_DIR, "kointrol-ai-218d7c03278d.json")
 
 credentials = ee.ServiceAccountCredentials(service_account, key_file)
 ee.Initialize(credentials)
-
-# -------------------------Detalles de Solicitud-----------------------------
-'''
-Observación: se hace la solicitud de la data de hace 8 días para
-asegurar la existencia de información a partir de la cual predecir
-'''
 
 class Solicitud:
     def __init__(self, coords):
@@ -74,7 +70,8 @@ class Solicitud:
 
     def hacer_solicitud(self, variables, fecha = None):
         if fecha is None:
-            fecha = date.today() - timedelta(days=7)
+            # Usamos 20 días atrás para asegurar disponibilidad de datos
+            fecha = date.today() - timedelta(days=20)
         elif isinstance(fecha,str):
             fecha = date.fromisoformat(fecha)
             
@@ -88,7 +85,7 @@ class Solicitud:
         }
         return detalles_solicitud
 
-# ---------------------------Extracción de Datos-----------------------------
+
 class DataFetcher:
     def __init__(self, solicitud, include_meta=True):
         self.solicitud = solicitud
@@ -102,68 +99,79 @@ class DataFetcher:
         results = {}
         for var_name, meta in self.solicitud['variables'].items():
             dataset = meta['dataset']
-            bands   = meta['bands']
-            vtype   = meta['type']
+            bands = meta['bands']
+            vtype = meta['type']
 
-            if vtype == 'daily':
-                results[var_name] = self.get_values(var_name, dataset, bands, f1, f2, punto)
-            elif vtype == 'hourly':
-                results[var_name] = self.get_daily(dataset, bands, f1, f2, punto)
+            if vtype == 'daily' or vtype == 'hourly':
+                raw_data = self.get_reduced_value(dataset, bands, f1, f2, punto)
             elif vtype == 'static':
-                results[var_name] = self.get_static(dataset, bands, punto)
+                raw_data = self.get_static_reduced(dataset, bands, punto)
             else:
-                results[var_name] = None
+                raw_data = 0.0
+
+            results[var_name] = self.process_variable_logic(var_name, bands, raw_data)
+            
         return results
 
-    def get_static(self, dataset, bands, punto):
+    def get_reduced_value(self, dataset, bands, f1, f2, punto):
+        coll = ee.ImageCollection(dataset).filterDate(f1, f2).select(bands)
+        
+        if coll.size().getInfo() == 0:
+            return {b: 0.0 for b in bands}
+            
+        img = coll.mean()
+        
+        # --- SOLUCIÓN CRÍTICA: BUFFER ---
+        # Creamos un radio de búsqueda de 5km (5000m) alrededor del punto.
+        # Esto permite capturar datos de tierra incluso si el click fue en el mar cercano.
+        geometry_buffer = punto.buffer(25000)
+
+        stats = img.reduceRegion(
+            reducer=ee.Reducer.mean(),
+            geometry=geometry_buffer, # Usamos el área circular, no el punto
+            scale=10000 
+        ).getInfo()
+        
+        return stats if stats else {b: 0.0 for b in bands}
+
+    def get_static_reduced(self, dataset, bands, punto):
         img = ee.Image(dataset).select(bands)
-        muestra = img.sample(region=punto, scale=30).first().toDictionary().getInfo()
-        return muestra.get(bands[0])
+        stats = img.reduceRegion(
+            reducer=ee.Reducer.first(),
+            geometry=punto.buffer(100), # Pequeño buffer para elevación también
+            scale=30
+        ).getInfo()
+        return stats if stats else {bands[0]: 0.0}
 
-    def get_daily(self, dataset, bands, f1, f2, punto):
-        coll = ee.ImageCollection(dataset).filterDate(f1, f2).select(bands)
-        count = coll.size().getInfo()
-        if count == 0:
-            return None
-        daily_img = coll.mean()
-        muestra = daily_img.sample(region=punto, scale=10000).first().toDictionary().getInfo()
-        return muestra.get(bands[0]) if len(bands) == 1 else {b: muestra.get(b) for b in bands}
-
-    def get_sample(self, dataset, bands, f1, f2, punto):
-        coll = ee.ImageCollection(dataset).filterDate(f1, f2).select(bands)
-        count = coll.size().getInfo()
-        if count == 1:
-            img = coll.first()
-            muestra = img.sample(region=punto, scale=10000).first().toDictionary().getInfo()
-            return muestra or {}
-        elif count == 0:
-            raise ValueError(f"{bands}: No se encontraron imágenes para el periodo de {f1} a {f2}.")
-        else:
-            raise ValueError(f"{bands}: El programa espera 1 imagen, pero se encontraron {count} entre {f1} y {f2}.")
-
-    def get_values(self, var_name, dataset, bands, f1, f2, punto):
-        muestra = self.get_sample(dataset, bands, f1, f2, punto)
+    def process_variable_logic(self, var_name, bands, muestra):
+        if not muestra: return 0.0
 
         if var_name == 'velocidad viento':
             u = muestra.get(bands[0])
             v = muestra.get(bands[1])
-            return (u**2 + v**2)**0.5 if u is not None and v is not None else None
+            if u is None or v is None: return 0.0
+            return (u**2 + v**2)**0.5
+        
         elif var_name == 'direccion viento':
             u = muestra.get(bands[0])
             v = muestra.get(bands[1])
-            return (180 / math.pi) * math.atan2(v, u) if u is not None and v is not None else None
+            if u is None or v is None: return 0.0
+            return (180 / math.pi) * math.atan2(v, u)
+            
         elif var_name == 'humedad relativa':
-            T  = muestra.get(bands[0])
+            T = muestra.get(bands[0])
             Td = muestra.get(bands[1])
             if T is not None and Td is not None:
-                return 100 * (math.exp((17.625*Td)/(243.04+Td)) /
-                              math.exp((17.625*T)/(243.04+T)))
-            return None
+                return 100 * (math.exp((17.625*Td)/(243.04+Td)) / math.exp((17.625*T)/(243.04+T)))
+            return 0.0
+            
         elif var_name == 'temperatura':
             kelvin = muestra.get(bands[0])
-            return kelvin - 273.15 if kelvin is not None else None
+            return kelvin - 273.15 if kelvin is not None else 0.0
+            
         else:
-            return muestra.get(bands[0]) if len(bands) == 1 else {b: muestra.get(b) for b in bands}
+            val = muestra.get(bands[0])
+            return val if val is not None else 0.0
 
     def to_dataframe(self):
         results = self.fetch()
@@ -174,5 +182,4 @@ class DataFetcher:
             results['fecha'] = f1.format('YYYY-MM-dd').getInfo()
             results['lat'] = lat
             results['lon'] = lon
-        df = pd.DataFrame([results])
-        return df
+        return pd.DataFrame([results])
