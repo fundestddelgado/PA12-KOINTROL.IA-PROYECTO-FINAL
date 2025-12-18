@@ -72,8 +72,12 @@ class Solicitud:
             }
         }
 
-    def hacer_solicitud(self, variables):
-        fecha = date.today() - timedelta(days=7)
+    def hacer_solicitud(self, variables, fecha = None):
+        if fecha is None:
+            fecha = date.today() - timedelta(days=7)
+        elif isinstance(fecha,str):
+            fecha = date.fromisoformat(fecha)
+            
         selected = {var: self.registro_variables[var]
                     for var in variables if var in self.registro_variables}
         detalles_solicitud = {
