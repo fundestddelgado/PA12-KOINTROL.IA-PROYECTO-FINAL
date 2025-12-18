@@ -4,18 +4,31 @@ import webbrowser
 import threading
 import json
 import os
+import sys 
 from datetime import date, timedelta
 import numpy as np
 
-# Importaciones de tus módulos de IA
-from Hackaton_SIC_2025.modulos_gee.feature_generator import feature_generator
-from Models.predict import predict_from_dataframe
+current_dir = os.path.dirname(os.path.abspath(__file__))
+project_root = os.path.dirname(current_dir)
+if project_root not in sys.path:
+    sys.path.append(project_root)
+
+try:
+    # Importaciones de módulos de IA
+    from Hackaton_SIC_2025.modulos_gee.feature_generator import feature_generator
+    from Proyecto_final_SIC_2025.Models.predict import predict_from_dataframe
+    print("✅ Módulos importados correctamente.")
+except ImportError as e:
+    print(f"Error crítico importando módulos: {e}")
+    print(f"Ruta actual: {current_dir}")
+    print(f"Raíz del proyecto detectada: {project_root}")
+    print(f"Sys.path: {sys.path}")
 
 class SolarRadiationMapApp:
     def __init__(self, root):
         self.root = root
         self.root.title("Proyecto Final IA | Predictor y Mapa de Radiación Solar")
-        # Tamaño ajustado para asegurar que quepa en pantallas estándar sin scroll
+       
         self.root.geometry("900x780") 
         self.root.configure(bg='#f0f8ff')
         
@@ -101,7 +114,7 @@ class SolarRadiationMapApp:
         )
         subtitle_label.pack(pady=(0, 2))
 
-    # --- PESTAÑA 2: PREDICTOR (OPTIMIZADO) ---
+    # --- PESTAÑA 2: ---
     def create_predictor_tab(self):
         predictor_frame = ttk.Frame(self.notebook, padding="15")
         self.notebook.add(predictor_frame, text="2. Predictor por Coordenadas")
