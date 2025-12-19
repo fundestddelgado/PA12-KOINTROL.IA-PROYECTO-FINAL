@@ -1,0 +1,9 @@
+numpy
+pandas
+geopandas
+plotly
+earthengine-api
+tensorflow
+scikit-learn
+joblib
+matplotlib

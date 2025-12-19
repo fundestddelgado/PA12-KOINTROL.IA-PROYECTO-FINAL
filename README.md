@@ -21,6 +21,52 @@ La aplicación integra la visualización de los resultados del modelo con una in
 
 ![Diagrama de flujo del procesamiento de datos](Proyecto_final_SIC_2025/Visualization/diagram.png)
 
+## ⚙️ Instalación y Requisitos
+
+Para ejecutar **MRNS** en tu entorno local, sigue estos pasos:
+
+### Prerrequisitos
+* **Python 3.10** o superior.
+* **Git** instalado.
+* Credenciales de Google Earth Engine (Archivo JSON de cuenta de servicio).
+
+### Pasos de Instalación
+
+1.  **Clonar el repositorio:**
+    ```bash
+    git clone [https://github.com/fundestddelgado/PA12-KOINTROL.IA-PROYECTO-FINAL.git](https://github.com/fundestddelgado/PA12-KOINTROL.IA-PROYECTO-FINAL.git)
+    cd PA12-KOINTROL.IA-PROYECTO-FINAL
+    ```
+
+2.  **Crear y activar un entorno virtual (Recomendado):**
+    ```bash
+    # En Windows
+    python -m venv venv
+    .\venv\Scripts\activate
+
+    # En macOS/Linux
+    python3 -m venv venv
+    source venv/bin/activate
+    ```
+
+3.  **Instalar dependencias:**
+    ```bash
+    pip install -r requirements.txt
+    ```
+
+4.  **Configurar Credenciales de Google Earth Engine:**
+    * Este proyecto requiere una llave de cuenta de servicio (`.json`) para acceder a la API de GEE.
+    * Coloca tu archivo de credenciales (ej. `kointrol-ai-xxxx.json`) en la carpeta `Hackaton_SIC_2025/modulos_gee/`.
+    * *Nota: Asegúrate de que el nombre del archivo coincida con el especificado en `modulos_gee.py` o actualiza la ruta en el código.*
+
+### 🚀 Ejecución
+
+Para iniciar la aplicación, ejecuta el siguiente comando desde la raíz del proyecto:
+
+```bash
+python Hackaton_SIC_2025/interfaz.py
+
+
 ## Arquitectura y Flujo de Datos
 
 El proyecto se estructura en tres fases principales: **Datos**, **Modelo** e **Interfaz**.
