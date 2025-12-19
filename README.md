@@ -65,7 +65,7 @@ Para iniciar la aplicación, ejecuta el siguiente comando desde la raíz del pro
 
 ```bash
 python Hackaton_SIC_2025/interfaz.py
-
+  ```
 
 ## Arquitectura y Flujo de Datos
 
